@@ -53,7 +53,7 @@ public sealed class FPSdebug : EditorWindow
 
         GUILayout.BeginHorizontal("box");
 
-        FPSLimit = EditorGUILayout.IntSlider("FPS Limitation", FPSLimit, MinFPSlimit, MaxFPSlimit);
+        FPSLimit = EditorGUILayout.IntSlider(FPSLimit, MinFPSlimit, MaxFPSlimit);
         if (GUILayout.Button("X", GUILayout.Width(20)))
         {
             FPSLimit = StableFPS;
