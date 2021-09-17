@@ -19,6 +19,9 @@ public sealed class FPSdebug : EditorWindow
         144 
     };
 
+    private Color Red = new Color(0.9f, 0.4f, 0.4f, 1);
+    private Color Green = new Color(0.4f, 0.9f, 0.4f, 1);
+
     [MenuItem("Tools/FPS_debug")]
     public static void Init()
     {
@@ -39,12 +42,19 @@ public sealed class FPSdebug : EditorWindow
 
         GUILayout.EndHorizontal();
 
-        Enabled = EditorGUILayout.Toggle("Limit", Enabled);
-        
+        var backgroundColor = GUI.backgroundColor;
+        GUI.backgroundColor = Enabled ? Green : Red;
+
+        if (GUILayout.Button(Enabled ? "Disable" : "Enable"))
+        {
+            Enabled = !Enabled;
+        }
+        GUI.backgroundColor = backgroundColor;
+
         GUILayout.BeginHorizontal("box");
 
         FPSLimit = EditorGUILayout.IntSlider("FPS Limitation", FPSLimit, MinFPSlimit, MaxFPSlimit);
-        if (GUILayout.Button("X"))
+        if (GUILayout.Button("X", GUILayout.Width(20)))
         {
             FPSLimit = StableFPS;
         }
