@@ -11,6 +11,14 @@ public sealed class FPSdebug : EditorWindow
     private int FPSLimit = 60;
     private const int StableFPS = 60;
 
+    private readonly int[] Presets = new int[4] 
+    { 
+        30, 
+        50, 
+        60, 
+        144 
+    };
+
     [MenuItem("Tools/FPS_debug")]
     public static void Init()
     {
@@ -18,6 +26,19 @@ public sealed class FPSdebug : EditorWindow
     }
     public void OnGUI()
     {
+        GUILayout.BeginHorizontal("box");
+
+        foreach (int preset in Presets)
+        {
+            if (GUILayout.Button(preset.ToString()))
+            {
+                FPSLimit = preset;
+                break;
+            }
+        }
+
+        GUILayout.EndHorizontal();
+
         Enabled = EditorGUILayout.Toggle("Limit", Enabled);
         
         GUILayout.BeginHorizontal("box");
