@@ -1,8 +1,14 @@
 ﻿using UnityEngine;
 using UnityEditor;
 
+/// <summary>
+/// FPS (Frames per second) debugger utility for Unity
+/// </summary>
 public sealed class FPSdebug : EditorWindow
 {
+    private const string WindowPath = "Tools/FPSD";
+    private const string WindowTitle = "FPSD";
+
     private bool Enabled = false;
 
     private const int MinFPSlimit = 10;
@@ -10,6 +16,7 @@ public sealed class FPSdebug : EditorWindow
 
     private int FPSLimit = 60;
     private const int StableFPS = 60;
+    private const int FloatingFPS = 1000;
 
     private readonly int[] Presets = new int[4] 
     { 
@@ -19,29 +26,27 @@ public sealed class FPSdebug : EditorWindow
         144 
     };
 
-    private Color Red = new Color(0.9f, 0.4f, 0.4f, 1);
-    private Color Green = new Color(0.4f, 0.9f, 0.4f, 1);
+    private readonly Color Red =    new Color(0.9f, 0.4f, 0.4f, 1);
+    private readonly Color Green =  new Color(0.4f, 0.9f, 0.4f, 1);
 
-    [MenuItem("Tools/FPS_debug")]
+    [MenuItem(WindowPath)]
     public static void Init()
     {
-        GetWindow<FPSdebug>().Show();
+        EditorWindow.GetWindow(typeof(FPSdebug), false, WindowTitle);
     }
-    public void OnGUI()
+    private void ReadPresets()
     {
-        GUILayout.BeginHorizontal("box");
-
         foreach (int preset in Presets)
         {
             if (GUILayout.Button(preset.ToString()))
             {
                 FPSLimit = preset;
-                break;
+                return;
             }
         }
-
-        GUILayout.EndHorizontal();
-
+    }
+    private void DrawActivationButton()
+    {
         var backgroundColor = GUI.backgroundColor;
         GUI.backgroundColor = Enabled ? Green : Red;
 
@@ -50,24 +55,38 @@ public sealed class FPSdebug : EditorWindow
             Enabled = !Enabled;
         }
         GUI.backgroundColor = backgroundColor;
+    }
+    private void SetFrameRate(int targetFPS)
+    {
+        Application.targetFrameRate = targetFPS;
+    }
+    public void OnGUI()
+    {
+
+        GUILayout.BeginHorizontal("box");
+
+        ReadPresets();
+
+        GUILayout.EndHorizontal();
+
+
+        DrawActivationButton();
+
 
         GUILayout.BeginHorizontal("box");
 
         FPSLimit = EditorGUILayout.IntSlider(FPSLimit, MinFPSlimit, MaxFPSlimit);
+
         if (GUILayout.Button("X", GUILayout.Width(20)))
-        {
             FPSLimit = StableFPS;
-        }
         
         GUILayout.EndHorizontal();
 
+
         if (Enabled)
-        {
-            Application.targetFrameRate = FPSLimit; // stable
-        }
-        if (!Enabled)
-        {
-            Application.targetFrameRate = 1000; // floating
-        }
+            SetFrameRate(FPSLimit); // stable
+
+        else
+            SetFrameRate(FloatingFPS); // floating
     }
 }
